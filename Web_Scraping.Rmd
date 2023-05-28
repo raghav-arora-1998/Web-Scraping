@@ -1,0 +1,452 @@
+---
+title: ""
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+## Global options
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+```{r lib}
+library(rvest)
+library(tidyverse)
+library(data.table)
+library(dplyr)
+```
+
+**#GSE 524 Lab 4**
+
+*Coffee Lovers Unite!*
+
+If caffeine is one of the most popular drugs, then coffee is likely one of the most popular delivery systems for it. Aside from caffeine, people enjoy the wonderful variety of coffee-related drinks. Let's do a rough investigation of the "market share" by some of the top coffee chains in the United States!
+
+The menuism.com website provides a great collection of data on store locations and chain prevalence. Check out this page for the Starbucks Coffee locations in the United States. Notice that this page only really gives the name of the state and the number of locations in that state. A similarly formatted page is available for many other coffee chains.
+
+[Scrape the Location Counts]{.underline}
+
+1.  Use the rvest package to scrape the data (from menuism.com like the link above) on state names and corresponding number of store locations, for the following chains:
+
+    a\. Starbucks
+
+```{r Starbucks}
+#Web Scraping
+starurl<- "https://www.menuism.com/restaurant-locations/starbucks-coffee-39564"
+
+starlink <- read_html(starurl)
+
+starnodes <- html_nodes(starlink, css="li")
+
+starlist <- html_text(starnodes) 
+
+starstates <- str_extract(starlist, ".*(?= Starbucks)" )
+
+State <- starstates[29:79]
+
+starchains <- str_extract(starlist, "(?<=\\().*(?=\\))")
+
+Star_Location <- starchains[29:79]
+
+#Making a table
+Star_Location <- as.numeric(Star_Location)
+Starbucks <- data.frame(State,Star_Location)
+Starbucks
+```
+
+    b\. Dunkin' Donuts
+
+```{r DD}
+#Web Scraping
+ddrurl<- "https://www.menuism.com/restaurant-locations/dunkin-donuts-181624"
+
+ddlink <- read_html(ddrurl)
+
+ddnodes <- html_nodes(ddlink, css="li")
+
+ddlist <- html_text(ddnodes) 
+
+ddstates <- str_extract(ddlist, ".*(?= Dunkin)" )
+
+State <- ddstates[30:74]
+
+ddchains <- str_extract(ddlist, "(?<=\\().*(?=\\))")
+
+DD_Location <- ddchains[30:74]
+
+#Making a table
+DD_Location <- as.numeric(DD_Location)
+Dunkin <- data.frame(State,DD_Location)
+Dunkin
+```
+
+    c\. Peet's Coffee & Tea
+
+```{r PC}
+#Web Scraping
+pcurl<- "https://www.menuism.com/restaurant-locations/peets-coffee-tea-84051"
+
+pclink <- read_html(pcurl)
+
+pcnodes <- html_nodes(pclink, css="li")
+
+pclist <- html_text(pcnodes) 
+
+pcstates <- str_extract(pclist, ".*(?= Peet's)" )
+
+State <- pcstates[29:37]
+
+pcchains <- str_extract(pclist, "(?<=\\().*(?=\\))")
+
+PC_Location <- pcchains[29:37]
+
+#Making a table
+PC_Location <- as.numeric(PC_Location)
+Peet <- data.frame(State,PC_Location)
+Peet
+```
+
+    d\. Tim Horton's
+
+```{r TH}
+#Web Scraping
+thurl<- "https://www.menuism.com/restaurant-locations/tim-hortons-190025"
+
+thlink <- read_html(thurl)
+
+thnodes <- html_nodes(thlink, css="li")
+
+thlist <- html_text(thnodes) 
+
+thstates <- str_extract(thlist, ".*(?= Tim)" )
+
+State <- thstates[29:44]
+
+thchains <- str_extract(thlist, "(?<=\\().*(?=\\))")
+
+TH_Location <- thchains[29:44]
+
+#Making a table
+TH_Location <- as.numeric(TH_Location)
+Tim <- data.frame(State,TH_Location)
+Tim
+```
+
+    e\. Panera Bread
+
+```{r PB}
+#Web Scraping
+pburl<- "https://www.menuism.com/restaurant-locations/panera-bread-4258"
+
+pblink <- read_html(pburl)
+
+pbnodes <- html_nodes(pblink, css="li")
+
+pblist <- html_text(pbnodes) 
+
+pbstates <- str_extract(pblist, ".*(?= Panera)" )
+
+State <- pbstates[30:75]
+
+pbchains <- str_extract(pblist, "(?<=\\().*(?=\\))")
+
+PB_Location <- pbchains[30:75]
+
+#Making a table
+PB_Location <- as.numeric(PB_Location)
+Panera <- data.frame(State,PB_Location)
+Panera
+```
+
+    f\. Caribou Coffee
+
+```{r CC}
+#Web Scraping
+ccurl<- "https://www.menuism.com/restaurant-locations/caribou-coffee-164861"
+
+cclink <- read_html(ccurl)
+
+ccnodes <- html_nodes(cclink, css="li")
+
+cclist <- html_text(ccnodes) 
+
+ccstates <- str_extract(cclist, ".*(?= Caribou)" )
+
+State <- ccstates[28:47]
+
+ccchains <- str_extract(cclist, "(?<=\\().*(?=\\))")
+
+CC_Location <- ccchains[28:47]
+
+#Making a table
+CC_Location <- as.numeric(CC_Location)
+Caribou <- data.frame(State,CC_Location)
+Caribou
+
+```
+
+    g\. Au Bon Pain
+
+```{r AB}
+#Web Scraping
+aburl<- "https://www.menuism.com/restaurant-locations/au-bon-pain-69342"
+
+ablink <- read_html(aburl)
+
+abnodes <- html_nodes(ablink, css="li")
+
+ablist <- html_text(abnodes) 
+
+abstates <- str_extract(ablist, ".*(?= Au)" )
+
+State <- abstates[28:49]
+
+abchains <- str_extract(ablist, "(?<=\\().*(?=\\))")
+
+AB_Location <- abchains[28:49]
+
+#Making a table
+AB_Location <- as.numeric(AB_Location)
+Aubon <- data.frame(State,AB_Location)
+Aubon
+```
+
+    h\. The Coffee Bean & Tea Leaf
+
+```{r CT}
+#Web Scraping
+cturl<- "https://www.menuism.com/restaurant-locations/the-coffee-bean-tea-leaf-165988"
+
+ctlink <- read_html(cturl)
+
+ctnodes <- html_nodes(ctlink, css="li")
+
+ctlist <- html_text(ctnodes) 
+
+ctstates <- str_extract(ctlist, ".*(?= The)" )
+
+State <- ctstates[28:35]
+
+ctchains <- str_extract(ctlist, "(?<=\\().*(?=\\))")
+
+CT_Location <- ctchains[28:35]
+
+#Making a table
+CT_Location <- as.numeric(CT_Location)
+Coffeebean <- data.frame(State,CT_Location)
+Coffeebean
+```
+
+    i\. McDonald's
+
+```{r MC}
+#Web Scraping
+mcurl<- "https://www.menuism.com/restaurant-locations/mcdonalds-21019"
+
+mclink <- read_html(mcurl)
+
+mcnodes <- html_nodes(mclink, css="li")
+
+mclist <- html_text(mcnodes) 
+
+mcstates <- str_extract(mclist, ".*(?= McDonald)" )
+
+State <- mcstates[30:80]
+
+mcchains <- str_extract(mclist, "(?<=\\().*(?=\\))")
+
+MC_Location <- mcchains[30:80]
+
+#Making a table
+MC_Location <- as.numeric(MC_Location)
+
+Mcdonalds <- data.frame(State,MC_Location)
+Mcdonalds
+```
+
+2.  Write a function stateabb() that takes a state name (assume it's spelled correctly) and converts it to its state abbreviation. This can be a very simple function.
+
+```{r stateabb}
+# Making a function that iterates over entire column
+ab = c()
+stateabb <- function(State){
+  for(i in 1:length(State)) {
+    ab[i] = state.abb[grep(State[i], state.name)]
+    if (str_detect(State[i], "District of Columbia") ==  TRUE){
+        ab[i] = "DC"
+    }
+  }
+  return(ab)
+}
+stateabb("California")
+```
+
+3.  Parse, merge and tidy your data so that you have a row for each state and two columns: state abbrevation, location count.
+
+```{r clean}
+#Using stateabb function to create a new column in the dataset for each dataframe created earlier on
+Starbucks <- Starbucks %>%
+  mutate(
+    State_abbreviation = sapply(Starbucks$State, stateabb)
+  ) %>%
+  select(State_abbreviation, Star_Location)
+Starbucks
+
+Dunkin <- Dunkin %>%
+  mutate(
+    State_abbreviation = sapply(Dunkin$State, stateabb)
+  ) %>%
+  select(State_abbreviation, DD_Location)
+Dunkin
+
+Peet <- Peet %>%
+  mutate(
+    State_abbreviation = sapply(Peet$State, stateabb)
+  ) %>%
+  select(State_abbreviation, PC_Location)
+Peet
+
+Tim <- Tim %>%
+  mutate(
+    State_abbreviation = sapply(Tim$State, stateabb)
+  ) %>%
+  select(State_abbreviation, TH_Location)
+Tim
+
+Panera <- Panera %>%
+  mutate(
+    State_abbreviation = sapply(Panera$State, stateabb)
+  ) %>%
+  select(State_abbreviation, PB_Location)
+Panera
+
+Caribou <- Caribou %>%
+  mutate(
+    State_abbreviation = sapply(Caribou$State, stateabb)
+  ) %>%
+  select(State_abbreviation, CC_Location)
+Caribou
+
+Aubon <- Aubon %>%
+  mutate(
+    State_abbreviation = sapply(Aubon$State, stateabb)
+  ) %>%
+  select(State_abbreviation, AB_Location)
+Aubon
+
+Coffeebean <- Coffeebean %>%
+  mutate(
+    State_abbreviation = sapply(Coffeebean$State, stateabb)
+  ) %>%
+  select(State_abbreviation, CT_Location)
+Coffeebean
+
+Mcdonalds <- Mcdonalds %>%
+  mutate(
+    State_abbreviation = sapply(Mcdonalds$State, stateabb)
+  ) %>%
+  select(State_abbreviation, MC_Location)
+Mcdonalds
+
+#Merging all datasets together
+
+#Each company_location_column is different as we would lose vital information by merging them all in one column
+
+Coffee <- list(Starbucks, Dunkin, Peet , Tim, Panera, Caribou, Aubon, Coffeebean, Mcdonalds)
+Coffee <- Coffee %>% reduce(full_join, by = "State_abbreviation")
+
+Coffee <- data.frame(Coffee)
+Coffee
+```
+
+[Supplemental Data]{.underline}
+
+4.  Scrape the state names and populations from this wikipedia page. Convert the state names to abbreviations and merge these data with your coffee dataset.
+
+```{r Wiki}
+#Web Scraping
+wikiurl <- "https://simple.wikipedia.org/wiki/List_of_U.S._states_by_population"
+
+wikilink <- read_html(wikiurl)
+
+wikinodes <- html_nodes(wikilink, css = "table")
+
+wikitable <- html_table(wikinodes)
+
+wikitable <- data.frame(wikitable)
+
+wikitable <- wikitable %>%
+  select(State, Population.estimate..July.1..2019.2.)
+
+wikitable <- wikitable %>%
+  mutate(
+    State_abbreviation = sapply(wikitable$State, stateabb)
+  )%>%
+  mutate(State_abbreviation = sapply(State_abbreviation, toString))
+
+wikitable <- data.frame(wikitable)
+wikitable
+
+#Merging all into previous dataframe
+Coffee <- right_join(wikitable, Coffee, by = "State_abbreviation")
+Coffee
+```
+
+5.  Find the revenue, stock price, or your financial metric of choice for each of the companies listed above (if you can find a website to scrape these from that's great!...but it's okay if you manually enter these into R). Merge these values into your big dataset. Note: these values may be repeated for each state.
+
+```{r Stock}
+Coffee <- Coffee %>%
+  mutate(Starbucks_SP = "$86.37", Dunkin_SP = "$106.48", Peet_SP = "$29.28", Tim_SP = "$52.49", Panera_SP = "$314.93", Caribou_SP = "$9.73", AuBon_SP = "$6.25", CoffeeBean_SP = "$3.63", Mcdonalds_SP = "$243.16")
+Coffee
+```
+
+6.  Create a region variable in your dataset according to the scheme on this wikipedia page: Northeast, Midwest, South, West. You do not need to scrape this information.
+
+```{r region}
+#Creating regions
+
+Northeast <- c("Connecticut", "Maine", "Massachusetts", "New Hampshire", "Rhode Island", "Vermont", "New Jersey", "New York", "Pennsylvania")
+
+Midwest <- c("Illinois", "Indiana", "Michigan", "Ohio", "Wisconsin", "Iowa", "Kansas", "Minnesota", "Missouri", "Nebraska", "North Dakota", "South Dakota")
+
+South <- c("Delaware", "Florida", "Georgia", "Maryland", "North Carolina", "South Carolina", "Virginia", "Washington", "DC", "West Virginia" ,"Alabama", "Kentucky", "Mississippi", "Tennessee", "Arkansas", "Louisiana", "Oklahoma", "Texas")
+
+West <- c("Arizona", "Colorado", "Idaho", "Montana", "Nevada", "New Mexico", "Utah", "Wyoming", "Alaska", "California", "Hawaii", "Oregon", "Washington")
+
+# Identifying regions using If statement 
+
+vec = Coffee$State
+for (i in 1:length(vec)) {
+  if(vec[i] %in% Northeast){
+    Coffee$Region[i] <- "Northeast"
+  }
+  else if (vec[i] %in% Midwest){
+    Coffee$Region[i] <- "Midwest"
+  }
+  else if (vec[i] %in% South){
+    Coffee$Region[i] <- "South"
+  }
+  else if (vec[i] %in% West){
+    Coffee$Region[i] <- "West"
+  }
+}
+Coffee
+```
+
+[Analyze]{.underline}
+
+7.  Assess and comment on the prevalence of each chain. Some questions to consider (you don't need to answer all of these and you may come up with your own):
+
+a. How does your chosen financial metric change by state and region for each chain? For example, having 5 stores in California is very different from having 5 stores in Wyoming.
+
+Since I chose my financial metric to be stock price it does not vary by state and region and remains constant. However, it does change continuously throughout the day!
+
+b. Does the distribution of each chain's stores match population distribution, by both state/region?
+
+Generally, when the population of the state is high so are the number of locations per company. Moreover, the region 'South' tends to have the highest number of locations per company.
+
+c. Do the financial data match what you'd expect based on the number and locations of the stores? Why or why not?
+
+Yes, the financial data matches what I would expect regarding the number of locations each company has, as companies with a higher stock price tend to have more number of locations in each state/region.

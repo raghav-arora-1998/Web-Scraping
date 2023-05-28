@@ -1,0 +1,85 @@
+---
+title: ""
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+## Global options
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+```{r lib}
+library(rvest)
+library(tidyverse)
+library(data.table)
+library(dplyr)
+library(glue)
+```
+
+```{r stateabb}
+ab = c()
+    stateabb <- function(state){
+      for (i in 1:length(state)) {
+       ab[i] = state.abb[grep(state[i], state.name)]
+      }
+        
+     return(ab)
+    }
+stateabb("California")
+```
+
+```{r}
+data_scrape <- function(url){
+  coffee <- c()
+  for (i in url) {
+    
+    flag = 1
+    urldata <- read_html(i)
+    coffee1 <- html_nodes(urldata, css = "li")
+    coffee1 <- html_text(coffee1)
+    coffee_name <- coffee1[26]
+    coffee_name <- gsub(" Locations", "", coffee_name)
+    coffee_name <- str_trim(coffee_name)
+    
+    
+    coffee_name <- paste(coffee_name, "locations")
+    states_re = glue (".*(?= {coffee_name})")
+    states <- str_extract(coffee1, states_re)
+    states <- states[!is.na(states)]
+    states1 <- c()
+    for (i in 1:length(states)) {
+      if (states[i] %in% state.name){
+      states1[i] <- states[i]
+      }
+    }
+    locations_re <- glue ("(?= {coffee_name}).*")
+    locations <- str_extract(coffee1, locations_re)
+    locations <- locations[!is.na(locations)]
+    locations <- str_extract(coffee1, "(?<=\\().*(?=\\))")
+    locations <- locations[!is.na(locations)]
+    length_states <- length(states1)
+    locations <- locations[1:length_states]
+    coffeedf <- data.frame(states1, locations)
+    coffeedf$locations <- as.numeric(coffeedf$locations)
+     
+    
+# creating abbreviations
+    coffeedf$company_name <- coffee_name
+    coffeedf <- coffeedf %>%
+      mutate(
+      state_abbreviation = sapply(coffeedf$states1, stateabb)
+  )
+    
+    coffee <- c(coffee, coffeedf)
+  }
+  
+  return(coffee)
+}
+vec = c("https://www.menuism.com/restaurant-locations/starbucks-coffee-39564", "https://www.menuism.com/restaurant-locations/dunkin-donuts-181624", "https://www.menuism.com/restaurant-locations/peets-coffee-tea-84051", "https://www.menuism.com/restaurant-locations/tim-hortons-190025", "https://www.menuism.com/restaurant-locations/panera-bread-4258", "https://www.menuism.com/restaurant-locations/caribou-coffee-164861", "https://www.menuism.com/restaurant-locations/au-bon-pain-69342", "https://www.menuism.com/restaurant-locations/the-coffee-bean-tea-leaf-165988", "https://www.menuism.com/restaurant-locations/mcdonalds-21019")
+data_scrape(vec)
+
+```
+
